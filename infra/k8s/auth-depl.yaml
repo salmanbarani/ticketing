@@ -14,10 +14,9 @@ spec:
     spec:
       containers:
         - name: auth
-        - image: salmanandb/auth
-
-# -------------
-apiVersion: apps/v1
+          image: us.gcr.io/ticketing-dev-369319/auth
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: auth-srv
@@ -26,6 +25,6 @@ spec:
     app: auth
   ports:
     - name: auth
-    - protocol: TCP
-    - port: 300
-    - targetPort: 3000
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
