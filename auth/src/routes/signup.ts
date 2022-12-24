@@ -25,7 +25,7 @@ validationRequest
     }
 
     const user = User.build({email, password});
-    user.save();
+    await user.save();
 
     // Generate JWT
     const userJwt = Jwt.sign({

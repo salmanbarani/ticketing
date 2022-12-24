@@ -40,13 +40,11 @@ it('returns a 200 on signin succcessful', async () => {
       .expect(201);
 
     const response = await request(app)
-      .post('/api/users/signi')
+      .post('/api/users/signin')
       .send({
         email: 'test@test.com',
         password: 'password'
       })
-    //   .expect(200);
-      console.log(response)
-    //   expect(response.get("Set-Cookie")).toBeDefined();
-      
+      .expect(200);
+      expect(response.get("Set-Cookie")).toBeDefined();
   });

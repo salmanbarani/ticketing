@@ -51,7 +51,7 @@ it('returns a 400 on invalid email and password', async () => {
     email: 'test@test.com',
     password: 'password'
     })
-    .expect(201);
+    .expect(400);
   });
 
   it('after successful signup make sure that headers are defined', async () => {

@@ -20,15 +20,15 @@ router.post("/api/users/signin",
 ],
 validationRequest
 ,async (req: Request, res: Response) => {
-    
     const {email, password} = req.body;
-
+    
     const existingUser = await User.findOne({email:email});
     
+
     if (!existingUser){
         throw new BadRequestError("Bad credentials!");
     }
-
+    
     const passwordsMatched = await Password.compare(existingUser.password, password );
 
     if (!passwordsMatched){
