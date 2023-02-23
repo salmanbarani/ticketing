@@ -4,6 +4,7 @@ import { json } from "body-parser";
 import cookieSession from 'cookie-session'
 import { createTicketRouter } from "./routes/new";
 import { errorHandler, NotFoundError, currentUser } from "@salmantickets/common";
+import { showTicketHandler } from "./routes/show";
 
 const app = express();
 app.set('trust proxy', true);
@@ -19,6 +20,7 @@ app.use(
 app.use(currentUser);
 
 app.use(createTicketRouter);
+app.use(showTicketHandler);
 
 app.all("/*", () => {
     throw new NotFoundError();
