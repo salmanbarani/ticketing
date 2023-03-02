@@ -6,6 +6,7 @@ import { createTicketRouter } from "./routes/new";
 import { errorHandler, NotFoundError, currentUser } from "@salmantickets/common";
 import { showTicketHandler } from "./routes/show";
 import { IndexTicketHandler } from "./routes";
+import { UpdateTicketRouter } from "./routes/update";
 
 const app = express();
 app.set('trust proxy', true);
@@ -23,6 +24,7 @@ app.use(currentUser);
 app.use(createTicketRouter);
 app.use(showTicketHandler);
 app.use(IndexTicketHandler);
+app.use(UpdateTicketRouter);
 
 app.all("/*", () => {
     throw new NotFoundError();
