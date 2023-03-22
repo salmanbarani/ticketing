@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: tickets
-          image: us.gcr.io/ticketing-dev-369319/tickets
+          image: salmanandb/tickets
           env:
             - name: MONGO_URI
-              value: "mongodb://tickets-mong-srv:27017/tickets"
+              value: 'mongodb://tickets-mongo-srv:27017/tickets'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
