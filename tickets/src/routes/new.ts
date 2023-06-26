@@ -25,8 +25,8 @@ router.post(
       userId: req.currentUser!.id,
     });
     await ticket.save();
-
-    new TicketCreatedPublisher(client).publish({
+    let client: any;
+    await new TicketCreatedPublisher(client).publish({
       id: ticket.id,
       title: ticket.title,
       price: ticket.price,
