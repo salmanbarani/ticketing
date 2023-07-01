@@ -1,5 +1,4 @@
-import nats, {Stan} from 'node-nats-streaming';
-
+import nats, { Stan } from 'node-nats-streaming';
 
 class NatsWrapper {
     /*
@@ -9,30 +8,27 @@ class NatsWrapper {
     // `by adding ?` telling  typescript this error will be defined later.
     private _client?: Stan;
 
-    get client() {
-        if (!this._client){
-            throw new Error("Can not access NATS client before connecting");
-        }
-        return this._client;
+  get client() {
+    if (!this._client) {
+      throw new Error('Cannot access NATS client before connecting');
     }
 
-    connect(clusterId: string, clientId:string, url:string) {
-        this._client = nats.connect(clusterId, clientId, {url});
-    
-        return new Promise <void> ((resolve, reject) => {
-            this.client.on('connect', () => {
-                // this function is invoked when nats connects successfully
-                console.log('Connected to NATS');
-                resolve();
-            });
+    return this._client;
+  }
 
-            this.client!.on('error', (err) => {
-                reject(err);
-            });
-        });
+  connect(clusterId: string, clientId: string, url: string) {
+    this._client = nats.connect(clusterId, clientId, { url });
 
-    }
+    return new Promise<void>((resolve, reject) => {
+      this.client.on('connect', () => {
+        console.log('Connected to NATS');
+        resolve();
+      });
+      this.client.on('error', (err) => {
+        reject(err);
+      });
+    });
+  }
 }
-
 
 export const natsWrapper = new NatsWrapper();
