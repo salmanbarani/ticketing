@@ -1,88 +1,103 @@
 import request from 'supertest';
-import {app} from "../../app";
+import { app } from '../../app';
 import mongoose from 'mongoose';
 
-it("return 404 if id provided does not exist",async () => {
-    const id = new mongoose.Types.ObjectId().toHexString();
-    request(app)
-        .put(`/api/tickets/${id}`)
-        .set("Cookie", global.signin())
-        .send({
-            title: "Online Journey",
-            price: 5
-        })
-        .expect(404);
+it('returns a 404 if the provided id does not exist', async () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
+  await request(app)
+    .put(`/api/tickets/${id}`)
+    .set('Cookie', global.signin())
+    .send({
+      title: 'aslkdfj',
+      price: 20,
+    })
+    .expect(404);
 });
 
-it("return 401 if the user is not authenticated",async () => {
-    const id = new mongoose.Types.ObjectId().toHexString();
-    request(app)
-        .put(`/api/tickets/${id}`)
-        .send({
-            title: "Online Journey",
-            price: 5
-        })
-        .expect(401); 
+it('returns a 401 if the user is not authenticated', async () => {
+  const id = new mongoose.Types.ObjectId().toHexString();
+  await request(app)
+    .put(`/api/tickets/${id}`)
+    .send({
+      title: 'aslkdfj',
+      price: 20,
+    })
+    .expect(401);
 });
 
-it("return 401 if the user does not own the ticket",async () => {
-    const response = await request(app)
-            .post('/api/tickets')
-            .set('Cookie', global.signin())
-            .send({title: "something", price:23})
-            .expect(201);
+it('returns a 401 if the user does not own the ticket', async () => {
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', global.signin())
+    .send({
+      title: 'asldkfj',
+      price: 20,
+    });
 
-
-    await request(app)
-        .put(`/api/tickets/${response.body.id}`)
-        .set('Cookie', global.signin())
-        .send({title:"update titel", price: 2300})
-        .expect(401);
-
-
+  await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set('Cookie', global.signin())
+    .send({
+      title: 'alskdjflskjdf',
+      price: 1000,
+    })
+    .expect(401);
 });
 
-it("return 400 if the user provides an invalid title and price",async () => {
-    const cookie = global.signin();
-    const response = await request(app)
-        .post('/api/tickets')
-        .set('Cookie', cookie)
-        .send({title: "something", price:23})
-        .expect(201);
+it('returns a 400 if the user provides an invalid title or price', async () => {
+  const cookie = global.signin();
 
-    await request(app)
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({
+      title: 'asldkfj',
+      price: 20,
+    });
+
+  await request(app)
     .put(`/api/tickets/${response.body.id}`)
     .set('Cookie', cookie)
-    .send({title: "", price:23})
+    .send({
+      title: '',
+      price: 20,
+    })
     .expect(400);
 
-    await request(app)
+  await request(app)
     .put(`/api/tickets/${response.body.id}`)
     .set('Cookie', cookie)
-    .send({title: "something", price:-22})
+    .send({
+      title: 'alskdfjj',
+      price: -10,
+    })
     .expect(400);
-
-
 });
 
-it("return 200 if update was successful",async () => {
-    const cookie = global.signin();
-    const response = await request(app)
-        .post('/api/tickets')
-        .set('Cookie', cookie)
-        .send({title: "something", price:23})
-        .expect(201);
+it('updates the ticket provided valid inputs', async () => {
+  const cookie = global.signin();
 
-    await request(app)
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({
+      title: 'asldkfj',
+      price: 20,
+    });
+
+  await request(app)
     .put(`/api/tickets/${response.body.id}`)
     .set('Cookie', cookie)
-    .send({title: "updated title", price:203})
+    .send({
+      title: 'new title',
+      price: 100,
+    })
     .expect(200);
 
-    const updatedResponse = await request(app)
-        .get(`/api/tickets/${response.body.id}`)
-        .send();
-    
-    expect(updatedResponse.body.title).toEqual("updated title");
-    expect(updatedResponse.body.price).toEqual(203);
+  const ticketResponse = await request(app)
+    .get(`/api/tickets/${response.body.id}`)
+    .send();
+
+  expect(ticketResponse.body.title).toEqual('new title');
+  expect(ticketResponse.body.price).toEqual(100);
 });

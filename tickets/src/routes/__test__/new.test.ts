@@ -1,83 +1,81 @@
 import request from 'supertest';
-import {app} from '../../app';
+import { app } from '../../app';
 import { Ticket } from '../../models/ticket';
 
-it('route handler listening to /api/tickets for post request',async () => {
-    const response = await request(app)
-        .post('/api/tickets')
-        .send({});
+it('has a route handler listening to /api/tickets for post requests', async () => {
+  const response = await request(app).post('/api/tickets').send({});
 
-        expect(response.status).not.toEqual(404);
+  expect(response.status).not.toEqual(404);
 });
 
-it('return 401 if user is not signed in',async () => {
-    await request(app).post('/api/tickets').send({}).expect(401)
+it('can only be accessed if the user is signed in', async () => {
+  await request(app).post('/api/tickets').send({}).expect(401);
 });
 
-
-it('return other than 401 if user is signed in',async () => {
-    const response = await request(app)
+it('returns a status other than 401 if the user is signed in', async () => {
+  const response = await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
-    .send({})
-    console.log(response.status)
-    expect(response.status).not.toEqual(401)
+    .set('Cookie', global.signin())
+    .send({});
+
+  expect(response.status).not.toEqual(401);
 });
 
-
-it('Error if an invalid title is provided',async () => {
-    await request(app)
+it('returns an error if an invalid title is provided', async () => {
+  await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
+    .set('Cookie', global.signin())
     .send({
-        title: '',
-        price: 20
+      title: '',
+      price: 10,
     })
     .expect(400);
 
-    await request(app)
+  await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
+    .set('Cookie', global.signin())
     .send({
-        price: 20
+      price: 10,
     })
     .expect(400);
 });
 
-
-it('Error if an invalid price is provided',async () => {
-    await request(app)
+it('returns an error if an invalid price is provided', async () => {
+  await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
+    .set('Cookie', global.signin())
     .send({
-        title: 'adsfdsdf',
-        price: -20
+      title: 'asldkjf',
+      price: -10,
     })
     .expect(400);
 
-    await request(app)
+  await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
+    .set('Cookie', global.signin())
     .send({
-        title: 'asdfasdf'
+      title: 'laskdfj',
     })
-    .expect(400); 
+    .expect(400);
 });
 
-it('create ticket with valid data',async () => {
-    let tickets = await Ticket.find({});
-    expect(tickets.length).toEqual(0);
-    
-    await request(app)
+it('creates a ticket with valid inputs', async () => {
+  let tickets = await Ticket.find({});
+  expect(tickets.length).toEqual(0);
+
+  const title = 'asldkfj';
+
+  await request(app)
     .post('/api/tickets')
-    .set("Cookie", global.signin())
+    .set('Cookie', global.signin())
     .send({
-        title: 'adsfdsdf',
-        price: 20
+      title,
+      price: 20,
     })
     .expect(201);
 
-    tickets = await Ticket.find({});
-    expect(tickets.length).toEqual(1);
-    
+  tickets = await Ticket.find({});
+  expect(tickets.length).toEqual(1);
+  expect(tickets[0].price).toEqual(20);
+  expect(tickets[0].title).toEqual(title);
 });
